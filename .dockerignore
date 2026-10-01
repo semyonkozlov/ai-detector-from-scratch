@@ -1,0 +1,4 @@
+*
+!requirements-service.txt
+!src/ai_detector/*.py
+!scripts/15_classifier-api/download-models.py

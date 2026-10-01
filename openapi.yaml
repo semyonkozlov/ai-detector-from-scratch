@@ -1,0 +1,135 @@
+openapi: 3.1.0
+info:
+  title: AI Detector Service
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health
+      operationId: health
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /v1/score:
+    post:
+      summary: Score
+      operationId: score_text
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoreResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        model:
+          type: string
+          title: Model
+        max_tokens:
+          type: integer
+          title: Max Tokens
+      type: object
+      required:
+      - status
+      - model
+      - max_tokens
+      title: HealthResponse
+    ScoreRequest:
+      properties:
+        text:
+          type: string
+          title: Text
+          description: Text to score, at least 50 words.
+      type: object
+      required:
+      - text
+      title: ScoreRequest
+    ScoreResponse:
+      properties:
+        score:
+          type: number
+          title: Score
+          description: Calibrated P(AI) in percent, 0-100.
+        label:
+          type: string
+          title: Label
+        model:
+          type: string
+          title: Model
+        word_count:
+          type: integer
+          title: Word Count
+        token_count:
+          type: integer
+          title: Token Count
+          description: Tokens in the full text.
+        truncated:
+          type: boolean
+          title: Truncated
+          description: True when only the first max_tokens tokens were scored.
+      type: object
+      required:
+      - score
+      - label
+      - model
+      - word_count
+      - token_count
+      - truncated
+      title: ScoreResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

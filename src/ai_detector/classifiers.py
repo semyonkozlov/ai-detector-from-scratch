@@ -84,6 +84,13 @@ class EncoderTextClassifier:
                     spec.artifact_path
                 )
             )
+        import torch
+
+        if self.device.type == "cpu" or (
+            self.device.type == "cuda"
+            and not torch.cuda.is_bf16_supported(including_emulation=False)
+        ):
+            self.model.float()
         self.model.to(self.device)
         self.model.eval()
 
